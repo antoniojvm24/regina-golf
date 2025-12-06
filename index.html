@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Regina Golf App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- PWA CONFIG -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5B6F3A">
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js");
+        }
+    </script>
+    <!-- END PWA CONFIG -->
+
+    <style>
+        :root {
+            --green-dark: #5B6F3A;
+            --green-mid:  #8FA76A;
+            --green-light:#C9D8A5;
+            --bg-main:   #F3F5EC;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-main);
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .app {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 3px solid var(--green-light);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+
+        .logo-wrap { text-align: center; margin-bottom: 0.5rem; }
+        .logo-img { max-width: 140px; height: auto; }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            color: var(--green-dark);
+            margin: 0.25rem 0 1rem 0;
+        }
+
+        h2 { color: var(--green-dark); font-size: 1.1rem; margin-top: 1.5rem; }
+        h3 { color: var(--green-dark); font-size: 1rem; margin-top: 1rem; }
+
+        .top-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid var(--green-light);
+            padding-bottom: .5rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        select, input, button {
+            border-radius: 6px;
+            border: 1px solid var(--green-light);
+            font-size: .9rem;
+            padding: .4rem .6rem;
+        }
+
+        button {
+            background: var(--green-dark);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: .15s;
+        }
+        button:hover { background: #4a5b30; }
+
+        #playersContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px,1fr));
+            gap: .4rem;
+            background: #fafcf7;
+            border-radius:10px;
+            padding:.5rem;
+            border:1px solid var(--green-light);
+        }
+
+        .players-list label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .guest-item {
+            display:flex; justify-content:space-between;
+            font-size:.85rem; margin:.25rem 0;
+        }
+        .guest-item button {
+            background:#b84747; padding:.15rem .5rem; font-size:.7rem;
+        }
+
+        .group-card {
+            margin:.4rem 0;
+            background:#fafcf7;
+            padding:.5rem;
+            border-radius:10px;
+            border:1px solid var(--green-light);
+        }
+
+        .scorecard { margin:.5rem 0 1rem; padding:.5rem; border-radius:10px; background:#fafcf7; border:1px solid var(--green-light);}
+        .strokes { font-size:.7rem; color:#444; }
+
+        table { width:100%; border-collapse:collapse; font-size:.85rem; }
+        th,td { border:1px solid #d7dfc9; padding:.3rem; text-align:center; }
+        th { background:var(--green-light); color:#2f3a21; }
+
+        .best-gross { background:#fff3cd; }
+        .best-net { background:#d4edda; }
+        .worst-net { background:#f8d7da; }
+
+        textarea {
+            width:100%; min-height:80px;
+            margin-top:.5rem;
+            border-radius:8px;
+            border:1px solid var(--green-light);
+            padding:.5rem;
+            background:#fafcf7;
+        }
+        .note { font-size:.8rem; color:#516044; margin:.2rem 0; }
+    </style>
+</head>
+
+<body>
+<div class="app">
+    <div class="logo-wrap"><img src="regina-logo.png" class="logo-img" alt="Regina logo"></div>
+    <h1>Regina Golf – Pareo y Resultados</h1>
+
+    <div class="top-row">
+        <div>
+            <label>Tipo de ronda:<br>
+                <select id="roundType">
+                    <option value="regular">Ronda Regular</option>
+                    <option value="mensual">Torneo Mensual</option>
+                </select>
+            </label>
+        </div>
+
+        <div>
+            <label>Formato de juego:<br>
+                <select id="gameFormat">
+                    <option value="stroke">Stroke play</option>
+                    <option value="stableford">Stableford</option>
+                    <option value="match">Match play</option>
+                </select>
+            </label>
+        </div>
+
+        <button id="generateBtn">Generar Pareos</button>
+    </div>
+
+    <h2>Jugadores hoy</h2>
+    <p class="note">Marque quiénes juegan hoy. Todos son socios del grupo.</p>
+    <div>
+        <button id="selectAllBtn" style="background:#8FA76A">Seleccionar todos</button>
+        <button id="deselectAllBtn" style="background:#9da8a0">Deseleccionar todos</button>
+    </div>
+    <div id="playersContainer" class="players-list"></div>
+
+    <h2>Invitados</h2>
+    <label>Anfitrión:</label><br>
+    <select id="guestHostSelect"></select>
+    <br><br>
+    <input id="guestNameInput" placeholder="Nombre invitado">
+    <input id="guestHcpInput" type="number" placeholder="HCP">
+    <button id="addGuestBtn">Agregar invitado</button>
+
+    <div id="guestsList" class="note" style="margin-top:.5rem;"></div>
+
+    <h2>Pareos</h2>
+    <div id="groupsContainer"></div>
+
+    <h3>Tarjetas Match Play</h3>
+    <div id="scorecardsContainer"></div>
+
+    <h3>Copiar a WhatsApp</h3>
+    <textarea id="exportText" readonly></textarea>
+
+    <div id="scoresSection" style="display:none;">
+        <h2>Resultados</h2>
+        <p class="note">
+            Ronda regular: orden general por HCP, mejor gross, mejor neto, peor neto.<br>
+            Torneo mensual: categorías A (&lt;12) y B (≥12), 1º y 2º gross/net por categoría y peor neto general.
+        </p>
+        <label>Fecha:</label><br>
+        <input id="roundDate" type="date"><br><br>
+        <div id="scoresTableContainer"></div>
+        <button id="calcScoresBtn">Calcular resultados y exportar Excel</button>
+        <p id="scoresSummary" class="note"></p>
+    </div>
+</div>
+
+<script>
+/* ========= DATA ========= */
+
+const players = [
+  "Gilberto Acosta","Phillippe Arnoux","Luis Beltran","Murielle Borgeaud",
+  "Carlos Braddick","Olga Brooks","Hope Bullock III","Cecil Casasola",
+  "Jose Casasola","Federico Cockburn","Manuel Cordova","Clarissa Corro",
+  "Rodolfo Fuentes","David Gomez","Pedro Gonzalez","Carlos Gonzalez",
+  "Luis Gordon","Cesar Hall","Edilberto Hernandez","Jose Leal",
+  "Sara Lin","Luis Llorach","Sofia Llorach","Tony Martinez",
+  "Fouad Moutran","Heriberto Olier","Julio Ortiz","BK Patel",
+  "Rui Tulha","Daniel Ribeiro","Jose Serracin","Pancho Townsend",
+  "Antonio Villarreal","Jose Von Chong"
+];
+
+const handicaps = {
+  "Gilberto Acosta": -1,
+  "Phillippe Arnoux":21,"Luis Beltran":19,"Murielle Borgeaud":28,
+  "Carlos Braddick":11,"Olga Brooks":11,"Hope Bullock III":10,"Cecil Casasola":6,
+  "Jose Casasola":7,"Federico Cockburn":15,"Manuel Cordova":40,"Clarissa Corro":22,
+  "Rodolfo Fuentes":15,"David Gomez":29,"Pedro Gonzalez":5,"Carlos Gonzalez":15,
+  "Luis Gordon":9,"Cesar Hall":4,"Edilberto Hernandez":9,"Jose Leal":13,
+  "Sara Lin":27,"Luis Llorach":20,"Sofia Llorach":11,"Tony Martinez":23,
+  "Fouad Moutran":8,"Heriberto Olier":30,"Julio Ortiz":7,"BK Patel":10,
+  "Rui Tulha":15,"Daniel Ribeiro":27,"Jose Serracin":14,"Pancho Townsend":13,
+  "Antonio Villarreal":22,"Jose Von Chong":25
+};
+
+const course = {
+  holes:[
+    {number:1,par:5,hcp:3},{number:2,par:4,hcp:9},{number:3,par:4,hcp:7},{number:4,par:4,hcp:11},
+    {number:5,par:4,hcp:1},{number:6,par:3,hcp:15},{number:7,par:5,hcp:5},{number:8,par:4,hcp:13},
+    {number:9,par:3,hcp:17},{number:10,par:4,hcp:6},{number:11,par:4,hcp:18},{number:12,par:3,hcp:14},
+    {number:13,par:5,hcp:12},{number:14,par:3,hcp:8},{number:15,par:5,hcp:2},{number:16,par:4,hcp:16},
+    {number:17,par:4,hcp:4},{number:18,par:4,hcp:10}
+  ]
+};
+
+/* ========= RESTRICCIONES ========= */
+
+// Tabla de "no pueden jugar juntos"
+const restrictions = {
+  // Fouad no puede jugar con:
+  "Fouad Moutran": [
+    "Olga Brooks",
+    "Murielle Borgeaud",
+    "Edilberto Hernandez",
+    "Cesar Hall"
+  ],
+
+  // Olga no puede jugar con muchos:
+  "Olga Brooks": [
+    "Luis Llorach",
+    "Sofia Llorach",
+    "Antonio Villarreal",
+    "Hope Bullock III",
+    "Rodolfo Fuentes",
+    "Pancho Townsend",
+    "Heriberto Olier",
+    "David Gomez",
+    "Clarissa Corro",
+    "Jose Von Chong",
+    "Manuel Cordova",
+    "Daniel Ribeiro",
+    "Fouad Moutran"
+  ],
+
+  // Recíprocos básicos con Olga
+  "Luis Llorach": ["Olga Brooks"],
+  "Sofia Llorach": ["Olga Brooks"],
+  "Antonio Villarreal": ["Olga Brooks"],
+  "Hope Bullock III": ["Olga Brooks"],
+  "Rodolfo Fuentes": ["Olga Brooks"],
+  "Pancho Townsend": ["Olga Brooks"],
+  "Heriberto Olier": ["Olga Brooks"],
+  "David Gomez": ["Olga Brooks"],
+  "Clarissa Corro": ["Olga Brooks"],
+  "Jose Von Chong": ["Olga Brooks"],
+  "Manuel Cordova": ["Olga Brooks"],
+  "Daniel Ribeiro": ["Olga Brooks"],
+
+  // Clarissa
+  "Clarissa Corro": [
+    "BK Patel",
+    "Gilberto Acosta",
+    "Olga Brooks"
+  ],
+  "BK Patel": ["Clarissa Corro"],
+  "Gilberto Acosta": ["Clarissa Corro"]
+};
+
+/* ========= ESTADO INVITADOS ========= */
+
+let guests = [];
+
+/* ========= UTILIDADES ========= */
+
+function getHandicap(name) {
+  const g = guests.find(x => x.name === name);
+  return g ? Number(g.hcp) || 0 : Number(handicaps[name]) || 0;
+}
+
+function getCategory(hcp) {
+  return hcp < 12 ? "A" : "B";
+}
+
+function hasRestriction(a, b) {
+  return (restrictions[a] && restrictions[a].includes(b)) ||
+         (restrictions[b] && restrictions[b].includes(a));
+}
+
+function shuffle(a){
+  const arr = a.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function selectedPlayers() {
+  return players.filter(p => {
+    const cb = document.getElementById("p-"+p.replace(/\s+/g,"_"));
+    return cb && cb.checked;
+  });
+}
+
+/* ========= RENDER INICIAL ========= */
+
+function renderPlayers(){
+  const cont = document.getElementById("playersContainer");
+  cont.innerHTML = "";
+  players.forEach(name => {
+    const id = "p-"+name.replace(/\s+/g,"_");
+    const label = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type="checkbox";
+    cb.id=id;
+    cb.checked=true;
+    label.appendChild(cb);
+    const span = document.createElement("span");
+    span.textContent=name;
+    label.appendChild(span);
+    cont.appendChild(label);
+  });
+}
+
+function renderHostSelect(){
+  const sel = document.getElementById("guestHostSelect");
+  sel.innerHTML = players.map(p=>`<option>${p}</option>`).join("");
+}
+
+function renderGuestsList(){
+  const box = document.getElementById("guestsList");
+  if(guests.length===0){
+    box.textContent = "Sin invitados";
+    return;
+  }
+  box.innerHTML = guests.map((g,i)=>`
+    <div class="guest-item">
+      ${g.name} (inv. ${g.host}, HCP ${g.hcp ?? 0})
+      <button onclick="guests.splice(${i},1);renderGuestsList()">X</button>
+    </div>
+  `).join("");
+}
+
+/* ========= BOTONES INVITADOS ========= */
+
+document.getElementById("addGuestBtn").onclick = () => {
+  const host = document.getElementById("guestHostSelect").value;
+  const name = document.getElementById("guestNameInput").value.trim();
+  const hcp  = document.getElementById("guestHcpInput").value.trim();
+  if(!name){ alert("Nombre de invitado obligatorio"); return; }
+  guests.push({name,host,hcp: hcp===""?0:Number(hcp)});
+  document.getElementById("guestNameInput").value="";
+  document.getElementById("guestHcpInput").value="";
+  renderGuestsList();
+};
+
+/* ========= AGRUPACIÓN (BLOQUES, TAMAÑOS, RESTRICCIONES) ========= */
+
+function buildBlocks(selectedNames, maxGroupSize = 4) {
+  const todaysGuests = guests.filter(g => selectedNames.includes(g.host));
+  const hostMap = new Map();
+  todaysGuests.forEach(g => {
+    if (!hostMap.has(g.host)) hostMap.set(g.host, []);
+    hostMap.get(g.host).push(g.name);
+  });
+
+  const blocks = [];
+  const usedHosts = new Set();
+
+  for (const [host, guestNames] of hostMap.entries()) {
+    const block = [host, ...guestNames];
+    if (block.length > maxGroupSize) {
+      return { error: `El anfitrión ${host} tiene demasiados invitados (${block.length}) para un grupo máximo de ${maxGroupSize} jugadores.` };
+    }
+    blocks.push(block);
+    usedHosts.add(host);
+  }
+
+  const remaining = selectedNames.filter(name => !usedHosts.has(name));
+  remaining.forEach(name => blocks.push([name]));
+
+  return { blocks };
+}
+
+function computeGroupSizes(totalPlayers) {
+  if (totalPlayers <= 4) return [totalPlayers];
+  let best = null;
+  for (let t = 0; t <= Math.floor(totalPlayers / 3); t++) {
+    const remaining = totalPlayers - 3 * t;
+    if (remaining < 0) continue;
+    if (remaining % 4 !== 0) continue;
+    const f = remaining / 4;
+    if (f < 0) continue;
+    if (!best || t < best.threes) best = { fours: f, threes: t };
+  }
+  if (!best) return null;
+  const sizes = [];
+  for (let i = 0; i < best.fours; i++) sizes.push(4);
+  for (let i = 0; i < best.threes; i++) sizes.push(3);
+  return sizes;
+}
+
+function countViolations(groups) {
+  let v=0;
+  for(const g of groups){
+    for(let i=0;i<g.length;i++){
+      for(let j=i+1;j<g.length;j++){
+        if(hasRestriction(g[i],g[j])) v++;
+      }
+    }
+  }
+  return v;
+}
+
+function generateGroupsWithBlocks(blocks, groupSizes, maxAttempts=3000){
+  if(!blocks || blocks.length===0) return null;
+  if(!groupSizes || groupSizes.length===0) return null;
+  const numGroups = groupSizes.length;
+  let bestGroups = null;
+  let bestViolations = Infinity;
+
+  for(let attempt=0; attempt<maxAttempts; attempt++){
+    const shuffledBlocks = shuffle(blocks);
+    const groups = Array.from({length:numGroups},()=>[]);
+    let ok = true;
+
+    for(const block of shuffledBlocks){
+      const indices = shuffle([...Array(numGroups).keys()]);
+      let placed=false;
+      for(const gi of indices){
+        const cap = groupSizes[gi];
+        const cur = groups[gi].length;
+        if(cur + block.length <= cap){
+          groups[gi].push(...block);
+          placed=true;
+          break;
+        }
+      }
+      if(!placed){ ok=false; break; }
+    }
+
+    if(!ok) continue;
+    const v = countViolations(groups);
+    if(v===0) return {groups, violations:0};
+    if(v < bestViolations){
+      bestViolations = v;
+      bestGroups = groups;
+    }
+  }
+  if(bestGroups) return {groups:bestGroups, violations:bestViolations};
+  return null;
+}
+
+/* ========= FOUD PRIORITY LOGIC ========= */
+
+function applyFouadPriority(groups, groupSizes, allPlayers) {
+  const fouad = "Fouad Moutran";
+  const primaryPartners = [
+    "Pancho Townsend",
+    "Hope Bullock III",
+    "Pedro Gonzalez",
+    "Rodolfo Fuentes",
+    "Antonio Villarreal",
+    "Jose Serracin"
+  ];
+  const fallbackPartners = [
+    "Carlos Braddick",
+    "Carlos Gonzalez"
+  ];
+  const preferredList = primaryPartners.concat(fallbackPartners);
+
+  // Si Fouad no está jugando, no hacemos nada
+  if (!allPlayers.includes(fouad)) return groups;
+
+  const capacity = groupSizes && groupSizes.length > 0 ? groupSizes[0] : 4;
+
+  // 1) Quitar a Fouad de donde esté
+  groups.forEach(g => {
+    const idx = g.indexOf(fouad);
+    if (idx !== -1) g.splice(idx, 1);
+  });
+
+  // 2) Elegir partners en orden de prioridad que:
+  //    - estén jugando hoy
+  //    - no tengan restricción con Fouad
+  const chosenPartners = [];
+  for (const p of preferredList) {
+    if (!allPlayers.includes(p)) continue;
+    if (hasRestriction(fouad, p)) continue;
+    if (chosenPartners.includes(p)) continue;
+    chosenPartners.push(p);
+    if (1 + chosenPartners.length >= capacity) break; // Fouad + partners = capacidad máx
+  }
+
+  // 3) Quitar esos partners de sus grupos actuales
+  chosenPartners.forEach(p => {
+    groups.forEach(g => {
+      const idx = g.indexOf(p);
+      if (idx !== -1) g.splice(idx, 1);
+    });
+  });
+
+  // 4) Guardar los jugadores que ya estaban en el Grupo 1 (antes de tocarlo)
+  const oldGroup0 = groups[0] ? groups[0].slice() : [];
+  const extras = oldGroup0.filter(p => p !== fouad && !chosenPartners.includes(p));
+
+  // 5) Reconstruir el Grupo 1 SOLO con Fouad + partners
+  groups[0] = [fouad, ...chosenPartners];
+
+  // 6) Reubicar los "extras" en otros grupos donde haya espacio y sin conflicto
+  extras.forEach(player => {
+    let placed = false;
+    for (let gi = 1; gi < groups.length; gi++) {
+      const cap = groupSizes[gi] || 4;
+      if (groups[gi].length < cap) {
+        const conflict = groups[gi].some(m => hasRestriction(player, m));
+        if (!conflict) {
+          groups[gi].push(player);
+          placed = true;
+          break;
+        }
+      }
+    }
+    if (!placed) {
+      groups[groups.length - 1].push(player);
+    }
+  });
+
+  return groups;
+}
+
+/* ========= GENERAR PAREOS ========= */
+
+document.getElementById("generateBtn").onclick = () => {
+  const sel = selectedPlayers();
+  if (sel.length === 0) {
+    alert("Seleccione al menos un jugador.");
+    return;
+  }
+
+  // Regla especial Fouad:
+  // si Fouad está seleccionado pero ninguno de sus partners está seleccionado,
+  // NO generamos pareos.
+  const fouad = "Fouad Moutran";
+  const fouadPartnersPreferred = [
+    "Pancho Townsend",
+    "Hope Bullock III",
+    "Pedro Gonzalez",
+    "Rodolfo Fuentes",
+    "Antonio Villarreal",
+    "Jose Serracin",
+    "Carlos Braddick",
+    "Carlos Gonzalez"
+  ];
+
+  if (sel.includes(fouad)) {
+    const partnersHoy = fouadPartnersPreferred.filter(p => sel.includes(p));
+    if (partnersHoy.length === 0) {
+      alert("Fouad Moutran no puede jugar hoy porque ninguno de sus partners permitidos está seleccionado.");
+      return;
+    }
+  }
+
+  const {blocks, error} = buildBlocks(sel, 4);
+  if(error){
+    alert(error);
+    return;
+  }
+
+  const totalPlayers = blocks.reduce((sum,b)=>sum+b.length,0);
+  const groupSizes = computeGroupSizes(totalPlayers);
+  if(!groupSizes){
+    alert(`No se pudo determinar combinación eficiente de tríos/cuatro para ${totalPlayers} jugadores.`);
+    return;
+  }
+
+  const result = generateGroupsWithBlocks(blocks, groupSizes);
+  if(!result){
+    alert("No se pudo generar pareo razonable con restricciones.");
+    return;
+  }
+
+  let groups = result.groups;
+  const violations = result.violations;
+
+  const allPlayersInRound = Array.from(new Set(groups.flat()));
+
+  // Aplicar prioridad de Fouad (Grupo 1, partners en orden)
+  groups = applyFouadPriority(groups, groupSizes, allPlayersInRound);
+
+  // Render grupos
+  const groupsContainer = document.getElementById("groupsContainer");
+  groupsContainer.innerHTML = groups.map((g,i)=>
+    `<div class="group-card"><strong>Grupo ${i+1} (${g.length}):</strong> ${g.join(", ")}</div>`
+  ).join("");
+
+  // Texto para WhatsApp
+  document.getElementById("exportText").value =
+    groups.map((g,i)=>`Grupo ${i+1} (${g.length}): ${g.join(", ")}`).join("\n");
+
+  renderScorecards(groups);
+  renderScoresTable(allPlayersInRound);
+};
+
+/* ========= MATCH PLAY SCORECARDS ========= */
+
+function strokesOnHole(hcp, si){
+  if(hcp <= 0) return 0;
+  const full = Math.floor(hcp/18);
+  const rem  = hcp % 18;
+  return full + (si <= rem ? 1 : 0);
+}
+
+function renderScorecards(groups){
+  const fmt=document.getElementById("gameFormat").value;
+  const box=document.getElementById("scorecardsContainer");
+  if(fmt!=="match"){
+    box.innerHTML="<p class='note'>Las tarjetas solo se muestran en formato Match play.</p>";
+    return;
+  }
+
+  const fecha = document.getElementById("roundDate").value || "";
+
+  box.innerHTML = groups.map((g,i)=>{
+    let html=`<div class='scorecard'><strong>Tarjeta Match Play – Grupo ${i+1}${fecha ? " – "+fecha : ""}</strong><table><thead><tr><th>Jugador</th>`;
+    course.holes.forEach(h=>html+=`<th>${h.number}</th>`);
+    html+="<th>Resultado</th></tr><tr><th>Par</th>";
+    course.holes.forEach(h=>html+=`<th>${h.par}</th>`);
+    html+="<th></th></tr><tr><th>HCP hoyo</th>";
+    course.holes.forEach(h=>html+=`<th>${h.hcp}</th>`);
+    html+="<th></th></tr></thead><tbody>";
+
+    g.forEach(p=>{
+      html+=`<tr><td>${p}</td>`;
+      const hcp=getHandicap(p);
+      course.holes.forEach(h=>{
+        const s=strokesOnHole(Math.max(hcp,0),h.hcp);
+        html += `<td class="strokes">${"•".repeat(s)}</td>`;
+      });
+      html+="<td></td></tr>";
+    });
+
+    html+="</tbody></table></div>";
+    return html;
+  }).join("");
+}
+
+/* ========= TABLA DE SCORES ========= */
+
+function renderScoresTable(list){
+  const type=document.getElementById("roundType").value;
+  const box=document.getElementById("scoresTableContainer");
+  const sec=document.getElementById("scoresSection");
+  sec.style.display="block";
+
+  let rows=list.map(name=>{
+    const hcp=getHandicap(name);
+    return {name, hcp, cat:getCategory(hcp)};
+  });
+
+  if(type==="mensual"){
+    rows.sort((a,b)=>{
+      if(a.cat!==b.cat) return a.cat.localeCompare(b.cat);
+      if(a.hcp!==b.hcp) return a.hcp-b.hcp;
+      return a.name.localeCompare(b.name);
+    });
+  } else {
+    rows.sort((a,b)=>{
+      if(a.hcp!==b.hcp) return a.hcp-b.hcp;
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  let html="<table><thead><tr>";
+  if(type==="mensual") html+="<th>Jugador</th><th>Cat</th><th>HCP</th><th>Gross</th><th>Neto</th>";
+  else html+="<th>Jugador</th><th>HCP</th><th>Gross</th><th>Neto</th>";
+  html+="</tr></thead><tbody>";
+
+  rows.forEach(r=>{
+    const id=r.name.replace(/\s+/g,"_");
+    const hcpDisp = r.hcp<0 ? "+"+Math.abs(r.hcp) : r.hcp;
+    if(type==="mensual"){
+      html+=`<tr id="row-${id}" data-player="${r.name}">
+               <td>${r.name}</td><td>${r.cat}</td><td>${hcpDisp}</td>
+               <td><input id="gross-${id}" type="number" style="width:70px"></td>
+               <td class="net"></td>
+             </tr>`;
+    } else {
+      html+=`<tr id="row-${id}" data-player="${r.name}">
+               <td>${r.name}</td><td>${hcpDisp}</td>
+               <td><input id="gross-${id}" type="number" style="width:70px"></td>
+               <td class="net"></td>
+             </tr>`;
+    }
+  });
+
+  box.innerHTML=html+"</tbody></table>";
+}
+
+/* ========= CÁLCULO DE SCORES ========= */
+
+document.getElementById("calcScoresBtn").onclick = () => {
+  const rows=document.querySelectorAll("#scoresTableContainer tbody tr");
+  const type=document.getElementById("roundType").value;
+  const summary=document.getElementById("scoresSummary");
+
+  let scores={};
+  rows.forEach(r=>{
+    const name=r.getAttribute("data-player");
+    const id=name.replace(/\s+/g,"_");
+    const gross=Number(document.getElementById("gross-"+id).value);
+    if(gross>0){
+      const hcp=getHandicap(name);
+      const net=gross-hcp;
+      scores[name]={gross,net,hcp,cat:getCategory(hcp)};
+      r.querySelector(".net").textContent=net;
+      r.classList.remove("best-gross","best-net","worst-net");
+    }
+  });
+
+  const names=Object.keys(scores);
+  if(names.length===0){ summary.textContent="No hay scores ingresados."; return; }
+
+  let bestGross=Math.min(...names.map(n=>scores[n].gross));
+  let bestNet=Math.min(...names.map(n=>scores[n].net));
+  let worstNet=Math.max(...names.map(n=>scores[n].net));
+
+  if(type==="regular"){
+    names.forEach(n=>{
+      const s=scores[n];
+      const row=document.getElementById("row-"+n.replace(/\s+/g,"_"));
+      if(s.gross===bestGross) row.classList.add("best-gross");
+      if(s.net===bestNet) row.classList.add("best-net");
+      if(s.net===worstNet) row.classList.add("worst-net");
+    });
+
+    summary.innerHTML =
+      `<strong>Ronda regular</strong><br>`+
+      `Mejor gross: ${bestGross}<br>`+
+      `Mejor neto: ${bestNet}<br>`+
+      `Peor neto: ${worstNet}`;
+  } else {
+    const catA = names.filter(n=>scores[n].cat==="A");
+    const catB = names.filter(n=>scores[n].cat==="B");
+
+    function firstSecond(list,key){
+      if(!list || list.length===0) return null;
+      const uniq=[...new Set(list.map(n=>scores[n][key]))].sort((a,b)=>a-b);
+      const firstVal=uniq[0];
+      const secondVal=uniq[1];
+      const firstNames=list.filter(n=>scores[n][key]===firstVal);
+      const secondNames=secondVal!==undefined?list.filter(n=>scores[n][key]===secondVal):[];
+      return {firstVal,firstNames,secondVal,secondNames};
+    }
+
+    const aGross=firstSecond(catA,"gross");
+    const aNet  =firstSecond(catA,"net");
+    const bGross=firstSecond(catB,"gross");
+    const bNet  =firstSecond(catB,"net");
+
+    function markClass(res, className){
+      if(!res) return;
+      res.firstNames.forEach(n=>{
+        const row=document.getElementById("row-"+n.replace(/\s+/g,"_"));
+        if(row) row.classList.add(className);
+      });
+      if(res.secondNames){
+        res.secondNames.forEach(n=>{
+          const row=document.getElementById("row-"+n.replace(/\s+/g,"_"));
+          if(row) row.classList.add(className);
+        });
+      }
+    }
+
+    markClass(aGross,"best-gross");
+    markClass(bGross,"best-gross");
+    markClass(aNet,"best-net");
+    markClass(bNet,"best-net");
+
+    const worstNamesAll = names.filter(n=>scores[n].net===worstNet);
+    worstNamesAll.forEach(n=>{
+      const row=document.getElementById("row-"+n.replace(/\s+/g,"_"));
+      if(row) row.classList.add("worst-net");
+    });
+
+    function block(title,resG,resN){
+      if(!resG && !resN) return `${title}: sin scores<br>`;
+      let txt=`<strong>${title}</strong><br>`;
+      if(resG){
+        txt += `Gross 1º: ${resG.firstVal} (${resG.firstNames.join(", ")})`;
+        if(resG.secondVal!==undefined)
+          txt += `<br>Gross 2º: ${resG.secondVal} (${resG.secondNames.join(", ")})`;
+        txt+="<br>";
+      }
+      if(resN){
+        txt += `Net 1º: ${resN.firstVal} (${resN.firstNames.join(", ")})`;
+        if(resN.secondVal!==undefined)
+          txt += `<br>Net 2º: ${resN.secondVal} (${resN.secondNames.join(", ")})`;
+        txt+="<br>";
+      }
+      return txt;
+    }
+
+    summary.innerHTML =
+      `<strong>Torneo mensual</strong><br>`+
+      block("Categoría A (hcp < 12)", aGross, aNet)+"<br>"+
+      block("Categoría B (hcp ≥ 12)", bGross, bNet)+
+      `<br><strong>Peor neto general:</strong> ${worstNet} (${worstNamesAll.join(", ")})`;
+  }
+
+  exportScoresToCSV(scores, bestGross, bestNet, worstNet, type, document.getElementById("gameFormat").value);
+};
+
+function exportScoresToCSV(scores, bestGrossVal, bestNetVal, worstNetVal, roundType, gameFormatVal){
+  const names=Object.keys(scores);
+  if(names.length===0) return;
+
+  const fecha=document.getElementById("roundDate").value || "";
+  const tipo=roundType==="mensual"?"Torneo mensual":"Ronda regular";
+  let formato="Stroke play";
+  if(gameFormatVal==="stableford") formato="Stableford";
+  else if(gameFormatVal==="match") formato="Match play";
+
+  let csv="Fecha,TipoRonda,FormatoJuego,Jugador,Categoria,HCP,Gross,Neto,MejorGrossGeneral,MejorNetoGeneral,PeorNetoGeneral\n";
+  names.forEach(name=>{
+    const {gross,net,hcp,cat}=scores[name];
+    const bestG = gross===bestGrossVal ? "SI" : "";
+    const bestN = net===bestNetVal ? "SI" : "";
+    const worstN= net===worstNetVal ? "SI" : "";
+    const hcpDisp = hcp<0 ? "+"+Math.abs(hcp) : hcp;
+    csv += `${fecha},${tipo},${formato},${name},${cat},${hcpDisp},${gross},${net},${bestG},${bestN},${worstN}\n`;
+  });
+
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url;
+  const safeDate=fecha?fecha.replace(/-/g,""):"sin_fecha";
+  link.download=`Regina_Ronda_${safeDate}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+/* ========= SELECT ALL / INIT ========= */
+
+document.getElementById("selectAllBtn").onclick = () => {
+  players.forEach(p=>{
+    const cb=document.getElementById("p-"+p.replace(/\s+/g,"_"));
+    if(cb) cb.checked=true;
+  });
+};
+document.getElementById("deselectAllBtn").onclick = () => {
+  players.forEach(p=>{
+    const cb=document.getElementById("p-"+p.replace(/\s+/g,"_"));
+    if(cb) cb.checked=false;
+  });
+};
+
+renderPlayers();
+renderHostSelect();
+renderGuestsList();
+
+const rd = document.getElementById("roundDate");
+if(rd) rd.value = new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
