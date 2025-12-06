@@ -221,10 +221,10 @@ const players = [
 const handicaps = {
   "Gilberto Acosta": -1,
   "Phillippe Arnoux":21,"Luis Beltran":19,"Murielle Borgeaud":28,
-  "Carlos Braddick":11,"Olga Brooks":11,"Hope Bullock III":10,"Cecil Casasola":6,
+  "Carlos Braddick":11,"Olga Brooks":0,"Hope Bullock III":10,"Cecil Casasola":6,
   "Jose Casasola":7,"Federico Cockburn":15,"Manuel Cordova":40,"Clarissa Corro":22,
-  "Rodolfo Fuentes":15,"David Gomez":29,"Pedro Gonzalez":5,"Carlos Gonzalez":15,
-  "Luis Gordon":9,"Cesar Hall":4,"Edilberto Hernandez":9,"Jose Leal":13,
+  "Rodolfo Fuentes":15,"David Gomez":30,"Pedro Gonzalez":0,"Carlos Gonzalez":0,
+  "Luis Gordon":9,"Cesar Hall":4,"Edilberto Hernandez":0,"Jose Leal":13,
   "Sara Lin":27,"Luis Llorach":20,"Sofia Llorach":11,"Tony Martinez":23,
   "Fouad Moutran":8,"Heriberto Olier":30,"Julio Ortiz":7,"BK Patel":10,
   "Rui Tulha":15,"Daniel Ribeiro":27,"Jose Serracin":14,"Pancho Townsend":13,
@@ -243,7 +243,6 @@ const course = {
 
 /* ========= RESTRICCIONES ========= */
 
-// Tabla de "no pueden jugar juntos"
 const restrictions = {
   // Fouad no puede jugar con:
   "Fouad Moutran": [
@@ -382,7 +381,7 @@ document.getElementById("addGuestBtn").onclick = () => {
   renderGuestsList();
 };
 
-/* ========= AGRUPACIÓN (BLOQUES, TAMAÑOS, RESTRICCIONES) ========= */
+/* ========= AGRUPACIÓN ========= */
 
 function buildBlocks(selectedNames, maxGroupSize = 4) {
   const todaysGuests = guests.filter(g => selectedNames.includes(g.host));
