@@ -25,35 +25,31 @@
       --green-light:#C9D8A5;
       --bg-main:#F3F5EC;
     }
-
     body{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg-main);
-      margin:0;
-      padding:1rem;
+      margin: 0;
+      padding: 1rem;
     }
-
     .app{
-      max-width:900px;
-      margin:0 auto;
+      max-width: 980px;
+      margin: 0 auto;
       background:#fff;
       padding:1.5rem;
       border-radius:16px;
       border:3px solid var(--green-light);
-      box-shadow:0 3px 10px rgba(0,0,0,0.12);
+      box-shadow:0 3px 10px rgba(0,0,0,.12);
     }
-
-    .logo-wrap{text-align:center;margin-bottom:.5rem;}
-    .logo-img{max-width:140px;height:auto;}
-
+    .logo-wrap{text-align:center;margin-bottom:.5rem}
+    .logo-img{max-width:140px;height:auto}
     h1{
       text-align:center;
       font-size:1.6rem;
       color:var(--green-dark);
-      margin:.25rem 0 1rem 0;
+      margin:.25rem 0 1rem;
     }
-    h2{color:var(--green-dark);font-size:1.1rem;margin-top:1.5rem;}
-    h3{color:var(--green-dark);font-size:1rem;margin-top:1rem;}
+    h2{color:var(--green-dark); font-size:1.1rem; margin-top:1.5rem}
+    h3{color:var(--green-dark); font-size:1rem; margin-top:1rem}
 
     .top-row{
       display:flex;
@@ -71,7 +67,6 @@
       font-size:.9rem;
       padding:.4rem .6rem;
     }
-
     button{
       background:var(--green-dark);
       color:#fff;
@@ -79,44 +74,24 @@
       cursor:pointer;
       transition:.15s;
     }
-    button:hover{background:#4a5b30;}
+    button:hover{background:#4a5b30}
+
+    .note{font-size:.82rem;color:#516044;margin:.2rem 0}
+    .strokes{font-size:.75rem;color:#444}
 
     #playersContainer{
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(190px,1fr));
+      grid-template-columns:repeat(auto-fill, minmax(210px,1fr));
       gap:.4rem;
       background:#fafcf7;
       border-radius:10px;
       padding:.5rem;
       border:1px solid var(--green-light);
     }
-
     .players-list label{
       display:inline-flex;
       align-items:center;
-      gap:.3rem;
-    }
-
-    .group-card{
-      margin:.4rem 0;
-      background:#fafcf7;
-      padding:.6rem .7rem;
-      border-radius:10px;
-      border:1px solid var(--green-light);
-    }
-
-    .guest-item{
-      display:flex;
-      justify-content:space-between;
-      font-size:.85rem;
-      margin:.25rem 0;
-      gap:.5rem;
-      align-items:center;
-    }
-    .guest-item button{
-      background:#b84747;
-      padding:.15rem .5rem;
-      font-size:.7rem;
+      gap:.35rem;
     }
 
     .badge{
@@ -129,14 +104,25 @@
       margin-left:.35rem;
     }
 
-    .note{font-size:.8rem;color:#516044;margin:.2rem 0;}
-    .strokes{font-size:.75rem;color:#444;}
+    .guest-item{
+      display:flex;
+      justify-content:space-between;
+      gap:.5rem;
+      align-items:center;
+      font-size:.85rem;
+      margin:.25rem 0;
+    }
+    .guest-item button{
+      background:#b84747;
+      padding:.15rem .5rem;
+      font-size:.7rem;
+    }
 
-    .scorecard{
-      margin:.5rem 0 1rem;
-      padding:.5rem;
-      border-radius:10px;
+    .group-card{
+      margin:.4rem 0;
       background:#fafcf7;
+      padding:.6rem .7rem;
+      border-radius:10px;
       border:1px solid var(--green-light);
     }
 
@@ -149,15 +135,32 @@
       padding:.5rem;
       background:#fafcf7;
     }
+
+    table{width:100%; border-collapse:collapse; font-size:.88rem}
+    th,td{border:1px solid #d7dfc9; padding:.35rem; text-align:center}
+    th{background:var(--green-light); color:#2f3a21}
+    td.left{text-align:left}
+
+    .section-card{
+      background:#fafcf7;
+      border:1px solid var(--green-light);
+      border-radius:12px;
+      padding:.75rem;
+      margin:.6rem 0;
+    }
+
+    .inline-actions{
+      display:flex;
+      gap:.5rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
   </style>
 </head>
 
 <body>
 <div class="app">
-  <div class="logo-wrap">
-    <img src="regina-logo.png" class="logo-img" alt="Regina logo">
-  </div>
-
+  <div class="logo-wrap"><img src="regina-logo.png" class="logo-img" alt="Regina logo"></div>
   <h1>Regina Golf – Pareo y Resultados</h1>
 
   <div class="top-row">
@@ -181,9 +184,10 @@
     </div>
 
     <button id="generateBtn">Generar Pareos</button>
+    <button id="showResultsBtn" style="background:#8FA76A">Resultados</button>
   </div>
 
-  <!-- Tee times -->
+  <!-- Tee time selection -->
   <h2>Tee times</h2>
   <p class="note">Seleccione las horas disponibles para salida por hoyo 1 y hoyo 10.</p>
 
@@ -223,51 +227,65 @@
 
   <!-- Excel upload -->
   <h2>Actualizar HCP (Excel)</h2>
-  <p class="note">
-    Suba un Excel con columnas: <strong>Nombre</strong> y <strong>HCP</strong> (o Handicap). Actualiza handicaps en esta sesión.
-  </p>
-  <div class="top-row" style="border-bottom:none; padding-bottom:0; margin-bottom:.25rem;">
+  <p class="note">Suba un Excel con columnas: <strong>Nombre</strong> y <strong>HCP</strong> (o Handicap).</p>
+  <div class="inline-actions">
     <input type="file" id="hcpExcelInput" accept=".xlsx,.xls" />
     <button id="applyHcpBtn" style="background:#8FA76A">Actualizar handicaps</button>
     <div id="hcpUploadStatus" class="note"></div>
   </div>
 
+  <!-- Players -->
   <h2>Jugadores hoy</h2>
-  <p class="note">Marque quiénes juegan hoy. Todos son socios del grupo.</p>
-
-  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+  <p class="note">Marque quiénes juegan hoy.</p>
+  <div class="inline-actions">
     <button id="selectAllBtn" style="background:#8FA76A">Seleccionar todos</button>
     <button id="deselectAllBtn" style="background:#9da8a0">Deseleccionar todos</button>
   </div>
-
   <div id="playersContainer" class="players-list"></div>
 
+  <!-- Guests -->
   <h2>Invitados</h2>
-  <label>Anfitrión:</label><br>
-  <select id="guestHostSelect"></select>
-  <br><br>
-
-  <input id="guestNameInput" placeholder="Nombre invitado">
-  <input id="guestHcpInput" type="number" placeholder="HCP" style="width:120px;">
-  <button id="addGuestBtn">Agregar invitado</button>
-
+  <div class="inline-actions">
+    <label>Anfitrión:
+      <select id="guestHostSelect"></select>
+    </label>
+    <input id="guestNameInput" placeholder="Nombre invitado">
+    <input id="guestHcpInput" type="number" placeholder="HCP" style="width:120px;">
+    <button id="addGuestBtn">Agregar invitado</button>
+  </div>
   <div id="guestsList" class="note" style="margin-top:.5rem;"></div>
 
+  <!-- Groups -->
   <h2>Pareos</h2>
   <div id="groupsContainer"></div>
-
-  <h3>Tarjetas Match Play</h3>
-  <div id="scorecardsContainer"></div>
 
   <h3>Copiar a WhatsApp</h3>
   <textarea id="exportText" readonly></textarea>
 
-  <!-- Keep your original Results logic if you had it; this file focuses on pairings + tee times + excel update -->
+  <!-- Results -->
+  <div id="scoresSection" style="display:none;">
+    <h2>Resultados</h2>
+    <p class="note">
+      <strong>Regular:</strong> lista por HCP descendente. Ingrese Gross. Calcula Neto. Premios: 1º/2º Gross, 1º/2º Neto, y peor neto “La Tanga”. <br>
+      <strong>Mensual:</strong> Flight A (HCP &lt; 12) y Flight B (HCP ≥ 12), cada flight por HCP descendente. Premios por flight: 1º/2º Gross y 1º/2º Neto. <strong>No se permiten ganadores duplicados</strong>.
+    </p>
+
+    <div class="inline-actions">
+      <label>Fecha:
+        <input id="roundDate" type="date">
+      </label>
+      <button id="buildResultsBtn" style="background:#8FA76A">Generar tabla</button>
+      <button id="calcScoresBtn">Calcular resultados</button>
+      <button id="hideResultsBtn" style="background:#9da8a0">Cerrar</button>
+    </div>
+
+    <div id="scoresTableContainer" style="margin-top:.6rem;"></div>
+    <div id="scoresSummary" class="section-card" style="margin-top:.6rem;"></div>
+  </div>
 </div>
 
 <script>
 /* ========= DATA ========= */
-
 const players = [
   "Gilberto Acosta","Phillippe Arnoux","Luis Beltran","Murielle Borgeaud",
   "Carlos Braddick","Olga Brooks","Hope Bullock III","Cecil Casasola",
@@ -280,7 +298,6 @@ const players = [
   "Pancho Townsend","Antonio Villarreal","Jose Von Chong"
 ];
 
-// Initial handicaps (Excel upload can overwrite these)
 const handicaps = {
   "Gilberto Acosta": -1,
   "Phillippe Arnoux": 21,
@@ -319,44 +336,12 @@ const handicaps = {
   "Jose Von Chong": 25
 };
 
-/* ========= SPECIAL RESTRICTIONS (YOUR RULES) ========= */
-
-const FOUAD = "Fouad Moutran";
-
-// Fouad only plays with the following (priority order)
-const FOUAD_ALLOWED_PARTNERS = [
-  "Pancho Townsend",
-  "Hope Bullock III",
-  "Rodolfo Fuentes",
-  "Pedro Gonzalez",
-  "Antonio Villarreal",
-  "Carlos Braddick"
-];
-
-// Avoid pairing Olga with:
-const OLGA_CANNOT_PLAY_WITH = [
-  "Clarissa Corro",
-  "Antonio Villarreal",
-  "Luis Llorach",
-  "Sara Lin"
-];
-
 /* ========= STATE ========= */
-
-let guests = [];   // {name, hcp, host}
-let teeSlots = []; // {time:"HH:MM", startHole:1|10}
-let lastGroups = [];
+let guests = [];            // {name, hcp, host}
+let teeSlots = [];          // {time:"HH:MM", startHole:1|10}
+let lastGroups = [];        // [{players:[{name,hcp,type,host?}], teeTime, startHole}]
 
 /* ========= HELPERS ========= */
-
-function normalizeName(s){
-  return (s || "")
-    .toString()
-    .trim()
-    .replace(/\s+/g, " ")
-    .toLowerCase();
-}
-
 function escapeHtml(s){
   return (s ?? "").toString()
     .replaceAll("&","&amp;")
@@ -365,26 +350,22 @@ function escapeHtml(s){
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
 }
-
+function normalizeName(s){
+  return (s || "").toString().trim().replace(/\s+/g," ").toLowerCase();
+}
 function shuffle(arr){
   const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  for (let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
   }
   return a;
 }
-
-function isGuest(p){ return p?.type === "guest"; }
-function isMember(p){ return p?.type === "member"; }
-
-function getSelectedPlayers(){
-  const checks = Array.from(document.querySelectorAll(".playerCheck"));
-  return checks.filter(c => c.checked).map(c => c.value);
+function sortByHcpDesc(arr){
+  return arr.slice().sort((a,b)=>(b.hcp ?? 0)-(a.hcp ?? 0));
 }
 
-/* ========= RENDER PLAYERS / HOST SELECT ========= */
-
+/* ========= RENDER PLAYERS / HOSTS ========= */
 function renderPlayers(){
   const container = document.getElementById("playersContainer");
   container.innerHTML = players.map(p => {
@@ -398,11 +379,10 @@ function renderPlayers(){
   }).join("");
 
   const host = document.getElementById("guestHostSelect");
-  host.innerHTML =
-    `<option value="">(Seleccione anfitrión)</option>` +
-    players.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+  host.innerHTML = `<option value="">(Seleccione anfitrión)</option>` + players.map(p =>
+    `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`
+  ).join("");
 }
-
 document.getElementById("selectAllBtn").addEventListener("click", () => {
   document.querySelectorAll(".playerCheck").forEach(c => c.checked = true);
 });
@@ -411,7 +391,6 @@ document.getElementById("deselectAllBtn").addEventListener("click", () => {
 });
 
 /* ========= GUESTS ========= */
-
 function renderGuests(){
   const el = document.getElementById("guestsList");
   if (!guests.length){
@@ -429,19 +408,17 @@ function renderGuests(){
     </div>
   `).join("");
 }
-
 window.removeGuest = function(idx){
-  guests.splice(idx, 1);
+  guests.splice(idx,1);
   renderGuests();
 };
-
 document.getElementById("addGuestBtn").addEventListener("click", () => {
   const host = document.getElementById("guestHostSelect").value.trim();
   const name = document.getElementById("guestNameInput").value.trim();
   const hcp = Number(document.getElementById("guestHcpInput").value);
 
   if (!name){ alert("Ingrese nombre del invitado."); return; }
-  if (!Number.isFinite(hcp)){ alert("Ingrese un HCP numérico para el invitado."); return; }
+  if (!Number.isFinite(hcp)){ alert("Ingrese un HCP numérico."); return; }
 
   guests.push({ name, hcp, host });
   document.getElementById("guestNameInput").value = "";
@@ -450,7 +427,6 @@ document.getElementById("addGuestBtn").addEventListener("click", () => {
 });
 
 /* ========= TEE TIMES ========= */
-
 const teeTimesHole1 = document.getElementById("teeTimesHole1");
 const teeTimesHole10 = document.getElementById("teeTimesHole10");
 const applyTeeTimesBtn = document.getElementById("applyTeeTimesBtn");
@@ -460,7 +436,6 @@ const teeTimesSummary = document.getElementById("teeTimesSummary");
 function getSelectedValues(selectEl){
   return Array.from(selectEl.selectedOptions).map(o => o.value);
 }
-
 function renderTeeSummary(){
   if (!teeSlots.length){
     teeTimesSummary.innerHTML = "<em>No hay tee times seleccionados.</em>";
@@ -472,28 +447,36 @@ function renderTeeSummary(){
     `<strong>Hoyo 1:</strong> ${byHole[1].join(", ") || "—"}<br>` +
     `<strong>Hoyo 10:</strong> ${byHole[10].join(", ") || "—"}`;
 }
-
 applyTeeTimesBtn.addEventListener("click", () => {
   const h1 = getSelectedValues(teeTimesHole1).sort();
   const h10 = getSelectedValues(teeTimesHole10).sort();
   teeSlots = [
-    ...h1.map(t => ({ time: t, startHole: 1 })),
-    ...h10.map(t => ({ time: t, startHole: 10 }))
+    ...h1.map(t => ({ time:t, startHole:1 })),
+    ...h10.map(t => ({ time:t, startHole:10 }))
   ];
   renderTeeSummary();
 });
-
 clearTeeTimesBtn.addEventListener("click", () => {
   teeSlots = [];
   Array.from(teeTimesHole1.options).forEach(o => o.selected = false);
   Array.from(teeTimesHole10.options).forEach(o => o.selected = false);
   renderTeeSummary();
 });
-
+function assignTeeSlotsToGroups(groups){
+  for (let i=0;i<groups.length;i++){
+    if (teeSlots[i]){
+      groups[i].teeTime = teeSlots[i].time;
+      groups[i].startHole = teeSlots[i].startHole;
+    } else {
+      groups[i].teeTime = null;
+      groups[i].startHole = null;
+    }
+  }
+  return groups;
+}
 renderTeeSummary();
 
 /* ========= EXCEL UPLOAD ========= */
-
 const hcpExcelInput = document.getElementById("hcpExcelInput");
 const applyHcpBtn = document.getElementById("applyHcpBtn");
 const hcpUploadStatus = document.getElementById("hcpUploadStatus");
@@ -505,7 +488,6 @@ function findHeaderIndex(headers, candidates){
   }
   return -1;
 }
-
 function parseNumber(val){
   if (val === null || val === undefined) return null;
   if (typeof val === "number") return val;
@@ -513,7 +495,6 @@ function parseNumber(val){
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
 }
-
 applyHcpBtn.addEventListener("click", async () => {
   const file = hcpExcelInput.files?.[0];
   if (!file){
@@ -521,13 +502,13 @@ applyHcpBtn.addEventListener("click", async () => {
     return;
   }
 
-  try {
+  try{
     const arrayBuffer = await file.arrayBuffer();
-    const wb = XLSX.read(arrayBuffer, { type: "array" });
+    const wb = XLSX.read(arrayBuffer, { type:"array" });
 
     const sheetName = wb.SheetNames[0];
     const ws = wb.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true });
+    const rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:true });
 
     if (!rows.length){
       hcpUploadStatus.textContent = "El archivo está vacío.";
@@ -535,12 +516,11 @@ applyHcpBtn.addEventListener("click", async () => {
     }
 
     const headerRow = rows[0].map(h => normalizeName(h));
-    const nameCol = findHeaderIndex(headerRow, ["nombre", "name", "player", "jugador"]);
-    const hcpCol  = findHeaderIndex(headerRow, ["hcp", "handicap", "index"]);
+    const nameCol = findHeaderIndex(headerRow, ["nombre","name","player","jugador"]);
+    const hcpCol  = findHeaderIndex(headerRow, ["hcp","handicap","index"]);
 
     if (nameCol === -1 || hcpCol === -1){
-      hcpUploadStatus.innerHTML =
-        "No encontré columnas válidas. Use encabezados como <strong>Nombre</strong> y <strong>HCP</strong> (o Handicap).";
+      hcpUploadStatus.innerHTML = "No encontré columnas válidas. Use <strong>Nombre</strong> y <strong>HCP</strong>.";
       return;
     }
 
@@ -549,9 +529,9 @@ applyHcpBtn.addEventListener("click", async () => {
 
     let updated = 0, skippedNotFound = 0, skippedBad = 0;
 
-    for (let r = 1; r < rows.length; r++){
+    for (let r=1;r<rows.length;r++){
       const row = rows[r];
-      if (!row || row.length === 0) continue;
+      if (!row || row.length===0) continue;
 
       const rawName = row[nameCol];
       const rawHcp = row[hcpCol];
@@ -570,184 +550,54 @@ applyHcpBtn.addEventListener("click", async () => {
     }
 
     renderPlayers();
-
     hcpUploadStatus.innerHTML =
-      `Listo. Actualizados: <strong>${updated}</strong>. ` +
-      `No encontrados: <strong>${skippedNotFound}</strong>. ` +
-      `HCP inválido: <strong>${skippedBad}</strong>.`;
-
+      `Listo. Actualizados: <strong>${updated}</strong>. No encontrados: <strong>${skippedNotFound}</strong>. HCP inválido: <strong>${skippedBad}</strong>.`;
   } catch (err){
     console.error(err);
-    hcpUploadStatus.textContent = "Error leyendo el Excel. Revise el formato del archivo.";
+    hcpUploadStatus.textContent = "Error leyendo el Excel. Revise el formato.";
   }
 });
 
-/* ========= RESTRICTIONS ENGINE (FOUAD + OLGA) ========= */
-
-function fouadCanBeGroupedWith(otherObj){
-  if (!otherObj) return true;
-
-  // Fouad can play with allowed member partners
-  if (isMember(otherObj)){
-    return otherObj.name === FOUAD || FOUAD_ALLOWED_PARTNERS.includes(otherObj.name);
-  }
-
-  // Guests: allow if host is Fouad OR host is one of Fouad's allowed partners
-  if (isGuest(otherObj)){
-    const host = (otherObj.host || "").trim();
-    return host === FOUAD || FOUAD_ALLOWED_PARTNERS.includes(host);
-  }
-
-  return false;
+/* ========= PAIRINGS ========= */
+function getSelectedMemberNames(){
+  return Array.from(document.querySelectorAll(".playerCheck"))
+    .filter(c => c.checked)
+    .map(c => c.value);
 }
-
-function violatesOlgaRule(group){
-  const names = group.players.map(p => p.name);
-  if (!names.includes("Olga Brooks")) return false;
-  return OLGA_CANNOT_PLAY_WITH.some(n => names.includes(n));
-}
-
-function buildFouadGroupIfPlaying(allPlayers){
-  const fouadIndex = allPlayers.findIndex(p => p.name === FOUAD);
-  if (fouadIndex === -1) return { fouadGroup: null, remaining: allPlayers.slice() };
-
-  const remaining = allPlayers.slice();
-  const fouadObj = remaining.splice(fouadIndex, 1)[0];
-
-  const group = { players: [fouadObj], teeTime:null, startHole:null };
-
-  // Add allowed partners in priority order (members)
-  for (const partnerName of FOUAD_ALLOWED_PARTNERS){
-    if (group.players.length >= 4) break;
-    const idx = remaining.findIndex(p => p.name === partnerName);
-    if (idx !== -1){
-      const candidate = remaining[idx];
-      if (fouadCanBeGroupedWith(candidate)){
-        group.players.push(remaining.splice(idx, 1)[0]);
-      }
-    }
-  }
-
-  // If still space, fill with guests invited by Fouad or allowed partners
-  for (let i = 0; i < remaining.length && group.players.length < 4; ){
-    const candidate = remaining[i];
-    if (isGuest(candidate) && fouadCanBeGroupedWith(candidate)){
-      group.players.push(remaining.splice(i, 1)[0]);
-    } else {
-      i++;
-    }
-  }
-
-  // If still not full, leave as 2–3 players (do NOT violate "only plays with")
-  return { fouadGroup: group, remaining };
-}
-
-function generateGroupsWithFouadAndOlgaRules(playerObjs){
-  const warnings = [];
-
-  const { fouadGroup, remaining } = buildFouadGroupIfPlaying(playerObjs);
-  const pool = shuffle(remaining);
-
-  const groups = [];
-  if (fouadGroup) groups.push(fouadGroup);
-
-  for (const p of pool){
-    let placed = false;
-
-    // Try add to existing group
-    for (const g of groups){
-      if (g.players.length >= 4) continue;
-
-      const hasFouad = g.players.some(x => x.name === FOUAD);
-      if (hasFouad && !fouadCanBeGroupedWith(p)) continue;
-
-      const testGroup = { players: g.players.concat([p]) };
-      if (violatesOlgaRule(testGroup)) continue;
-
-      g.players.push(p);
-      placed = true;
-      break;
-    }
-
-    if (!placed){
-      // start new group (but if p is not allowed with Fouad, that's fine because Fouad is already grouped)
-      groups.push({ players: [p], teeTime:null, startHole:null });
-    }
-  }
-
-  // Warn if Olga violation exists (should be avoided; if constraints forced it, warn)
-  groups.forEach((g, idx) => {
-    if (violatesOlgaRule(g)){
-      warnings.push(`Grupo ${idx+1}: Olga Brooks con pareja no permitida`);
-    }
-  });
-
-  return { groups, warnings };
-}
-
-/* ========= ASSIGN TEE TIMES (FOUAD EARLIEST) ========= */
-
-function assignTeeSlotsToGroups(groups){
-  // earliest by time regardless of hole
-  const slots = (teeSlots || []).slice().sort((a,b) => a.time.localeCompare(b.time));
-
-  const fouadGroupIndex = groups.findIndex(g => g.players.some(p => p.name === FOUAD));
-
-  // Reserve earliest for Fouad group
-  if (slots.length && fouadGroupIndex !== -1){
-    const earliest = slots.shift();
-    groups[fouadGroupIndex].teeTime = earliest.time;
-    groups[fouadGroupIndex].startHole = earliest.startHole;
-  }
-
-  let si = 0;
-  for (let gi = 0; gi < groups.length; gi++){
-    if (gi === fouadGroupIndex) continue;
-
-    if (slots[si]){
-      groups[gi].teeTime = slots[si].time;
-      groups[gi].startHole = slots[si].startHole;
-      si++;
-    } else {
-      groups[gi].teeTime = null;
-      groups[gi].startHole = null;
-    }
-  }
-
-  return groups;
-}
-
-/* ========= GROUPING / OUTPUT ========= */
-
 function buildTodayPlayers(){
-  const selectedMembers = getSelectedPlayers().map(name => ({
+  const selectedMembers = getSelectedMemberNames().map(name => ({
     name,
     hcp: (handicaps[name] ?? 0),
     type: "member"
   }));
-
   const guestPlayers = guests.map(g => ({
     name: g.name,
     hcp: g.hcp,
     type: "guest",
-    host: (g.host || "").trim()
+    host: g.host || ""
   }));
-
   return [...selectedMembers, ...guestPlayers];
 }
-
+function generateGroups(list){
+  const shuffled = shuffle(list);
+  const groups = [];
+  for (let i=0;i<shuffled.length;i+=4){
+    groups.push({
+      players: shuffled.slice(i, i+4),
+      teeTime: null,
+      startHole: null
+    });
+  }
+  return groups;
+}
 function renderGroups(groups){
   const el = document.getElementById("groupsContainer");
   if (!groups.length){
     el.innerHTML = "<em>No hay grupos. Seleccione jugadores y genere pareos.</em>";
     return;
   }
-
   el.innerHTML = groups.map((g, idx) => {
-    const teeLabel = g.teeTime
-      ? `⏱ ${g.teeTime} — Hoyo ${g.startHole}`
-      : `⚠️ Sin tee time asignado`;
-
+    const teeLabel = g.teeTime ? `⏱ ${g.teeTime} — Hoyo ${g.startHole}` : `⚠️ Sin tee time asignado`;
     const rows = g.players.map(p => {
       const extra = p.type === "guest" ? ` <span class="badge">Invitado</span>` : "";
       const host = p.type === "guest" && p.host ? ` <span class="badge">Host: ${escapeHtml(p.host)}</span>` : "";
@@ -756,42 +606,12 @@ function renderGroups(groups){
 
     return `
       <div class="group-card">
-        <div><strong>Grupo ${idx + 1}</strong> <span class="badge">${escapeHtml(teeLabel)}</span></div>
+        <div><strong>Grupo ${idx+1}</strong> <span class="badge">${teeLabel}</span></div>
         <div style="margin-top:.35rem;">${rows}</div>
       </div>
     `;
   }).join("");
 }
-
-function renderMatchCards(groups){
-  const gameFormat = document.getElementById("gameFormat").value;
-  const el = document.getElementById("scorecardsContainer");
-
-  if (gameFormat !== "match" || !groups.length){
-    el.innerHTML = "<span class='note'>Seleccione “Match play” para mostrar tarjetas.</span>";
-    return;
-  }
-
-  el.innerHTML = groups.map((g, idx) => {
-    const p = g.players;
-    const a = p[0]?.name || "—";
-    const b = p[1]?.name || "—";
-    const c = p[2]?.name || "—";
-    const d = p[3]?.name || "—";
-    const tee = g.teeTime ? `${g.teeTime} H${g.startHole}` : "Sin tee time";
-
-    return `
-      <div class="scorecard">
-        <div><strong>Match Cards — Grupo ${idx+1}</strong> <span class="badge">${escapeHtml(tee)}</span></div>
-        <div class="note" style="margin-top:.3rem;">
-          1) ${escapeHtml(a)} vs ${escapeHtml(b)}<br>
-          2) ${escapeHtml(c)} vs ${escapeHtml(d)}
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
 function buildWhatsAppText(groups){
   const lines = [];
   lines.push("Regina Golf – Pareos");
@@ -808,7 +628,6 @@ function buildWhatsAppText(groups){
 
   return lines.join("\n");
 }
-
 document.getElementById("generateBtn").addEventListener("click", () => {
   const today = buildTodayPlayers();
   if (today.length < 2){
@@ -816,27 +635,228 @@ document.getElementById("generateBtn").addEventListener("click", () => {
     return;
   }
 
-  const result = generateGroupsWithFouadAndOlgaRules(today);
-  let groups = result.groups;
+  let groups = generateGroups(today);
   groups = assignTeeSlotsToGroups(groups);
-
   lastGroups = groups;
 
   renderGroups(groups);
-  renderMatchCards(groups);
   document.getElementById("exportText").value = buildWhatsAppText(groups);
 
-  if (result.warnings.length){
-    alert("⚠️ Avisos:\n" + result.warnings.join("\n"));
+  // convenience: build results table
+  renderResultsTable();
+});
+
+/* ========= RESULTS (NO DUPLICATE WINNERS) ========= */
+function pickTopUnique(rows, key, count, excludeSet){
+  const sorted = rows.slice().sort((a,b)=>(a[key] ?? Infinity) - (b[key] ?? Infinity));
+  const picked = [];
+  for (const r of sorted){
+    if (excludeSet.has(r.name)) continue;
+    picked.push(r);
+    excludeSet.add(r.name);
+    if (picked.length === count) break;
   }
+  return picked;
+}
+function pickWorstUnique(rows, key, excludeSet){
+  const sorted = rows.slice().sort((a,b)=>(b[key] ?? -Infinity) - (a[key] ?? -Infinity));
+  for (const r of sorted){
+    if (excludeSet.has(r.name)) continue;
+    excludeSet.add(r.name);
+    return [r];
+  }
+  return [];
+}
+function buildValidScores(rows){
+  return rows
+    .map(r => ({...r, gross: Number(r.gross), hcp: Number(r.hcp)}))
+    .filter(r => Number.isFinite(r.gross) && Number.isFinite(r.hcp))
+    .map(r => ({...r, net: r.gross - r.hcp}))
+    .filter(r => Number.isFinite(r.net));
+}
+function calcRegularResultsUnique(rows){
+  const valid = buildValidScores(rows);
+  const used = new Set();
+  const grossTop2 = pickTopUnique(valid, "gross", 2, used);
+  const netTop2   = pickTopUnique(valid, "net",   2, used);
+  const laTanga   = pickWorstUnique(valid, "net", used);
+  return { grossTop2, netTop2, laTanga };
+}
+function calcMonthlyResultsUnique(rows){
+  const valid = buildValidScores(rows).map(r => ({...r, flight: (r.hcp < 12 ? "A" : "B")}));
+  const flightA = valid.filter(r => r.flight === "A");
+  const flightB = valid.filter(r => r.flight === "B");
+
+  const usedGlobal = new Set();
+
+  function flightWinners(flightRows){
+    const used = new Set([...usedGlobal]); // avoid duplicates with anything already chosen
+    const grossTop2 = pickTopUnique(flightRows, "gross", 2, used);
+    const netTop2   = pickTopUnique(flightRows, "net",   2, used);
+    grossTop2.forEach(x => usedGlobal.add(x.name));
+    netTop2.forEach(x => usedGlobal.add(x.name));
+    return { grossTop2, netTop2 };
+  }
+
+  const A = flightWinners(flightA);
+  const B = flightWinners(flightB);
+  const laTanga = pickWorstUnique(valid, "net", usedGlobal);
+  return { A, B, laTanga };
+}
+
+/* Build result rows from selected members + guests.
+   Monthly excludes guests by default. */
+function getResultsPlayers(){
+  const roundType = document.getElementById("roundType").value;
+
+  const members = getSelectedMemberNames().map(name => ({
+    name,
+    hcp: handicaps[name] ?? 0,
+    gross: ""
+  }));
+
+  const guestRows = guests.map(g => ({
+    name: g.name,
+    hcp: g.hcp,
+    gross: "",
+    isGuest: true
+  }));
+
+  if (roundType === "mensual") return members;
+  return [...members, ...guestRows];
+}
+
+function buildScoresTableHTML(rows){
+  if (!rows.length) return `<p class="note"><em>No hay jugadores para resultados. Seleccione jugadores primero.</em></p>`;
+  return `
+    <table>
+      <thead>
+        <tr>
+          <th>Jugador</th>
+          <th>HCP</th>
+          <th>Gross</th>
+          <th>Net</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td class="left">${escapeHtml(r.name)}</td>
+            <td>${escapeHtml(r.hcp)}</td>
+            <td><input class="grossInput" type="number" min="0" data-name="${escapeHtml(r.name)}" data-hcp="${escapeHtml(r.hcp)}" style="width:90px;"></td>
+            <td><span class="netCell">—</span></td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+function attachGrossListeners(){
+  document.querySelectorAll(".grossInput").forEach(inp => {
+    inp.addEventListener("input", () => {
+      const gross = Number(inp.value);
+      const hcp = Number(inp.dataset.hcp);
+      const netCell = inp.closest("tr").querySelector(".netCell");
+      if (!Number.isFinite(gross) || !Number.isFinite(hcp)) netCell.textContent = "—";
+      else netCell.textContent = (gross - hcp);
+    });
+  });
+}
+function renderResultsTable(){
+  const roundType = document.getElementById("roundType").value;
+  const container = document.getElementById("scoresTableContainer");
+  const rows = sortByHcpDesc(getResultsPlayers());
+
+  if (roundType === "regular"){
+    container.innerHTML = `<div class="section-card"><strong>Ronda Regular (HCP ↓)</strong>${buildScoresTableHTML(rows)}</div>`;
+  } else {
+    const flightA = rows.filter(r => (r.hcp ?? 0) < 12);
+    const flightB = rows.filter(r => (r.hcp ?? 0) >= 12);
+
+    container.innerHTML =
+      `<div class="section-card"><strong>Flight A (HCP &lt; 12) — HCP ↓</strong>${buildScoresTableHTML(flightA)}</div>` +
+      `<div class="section-card"><strong>Flight B (HCP ≥ 12) — HCP ↓</strong>${buildScoresTableHTML(flightB)}</div>`;
+  }
+
+  attachGrossListeners();
+  document.getElementById("scoresSummary").innerHTML = `<em>Ingrese Gross y luego presione “Calcular resultados”.</em>`;
+}
+function readResultRowsFromInputs(){
+  return Array.from(document.querySelectorAll(".grossInput")).map(inp => ({
+    name: inp.dataset.name,
+    hcp: Number(inp.dataset.hcp),
+    gross: Number(inp.value)
+  }));
+}
+function formatTop2(arr, label, key){
+  if (!arr || arr.length === 0) return `${label}: —`;
+  const a = arr[0] ? `1º ${escapeHtml(arr[0].name)} (${arr[0][key]})` : "—";
+  const b = arr[1] ? ` · 2º ${escapeHtml(arr[1].name)} (${arr[1][key]})` : "";
+  return `${label}: ${a}${b}`;
+}
+function formatOne(arr, label, key){
+  if (!arr || arr.length === 0) return `${label}: —`;
+  return `${label}: ${escapeHtml(arr[0].name)} (${arr[0][key]})`;
+}
+document.getElementById("calcScoresBtn").addEventListener("click", () => {
+  const roundType = document.getElementById("roundType").value;
+  const rows = readResultRowsFromInputs();
+  const summary = document.getElementById("scoresSummary");
+
+  const filled = rows.filter(r => Number.isFinite(r.gross));
+  if (filled.length < 2){
+    summary.innerHTML = `<strong>Faltan datos</strong><br>Ingrese Gross para al menos 2 jugadores.`;
+    return;
+  }
+
+  if (roundType === "regular"){
+    const r = calcRegularResultsUnique(rows);
+    summary.innerHTML = `
+      <strong>Resultados – Ronda Regular</strong><br><br>
+      🏆 ${formatTop2(r.grossTop2, "Gross", "gross")}<br>
+      🥇 ${formatTop2(r.netTop2, "Neto", "net")}<br>
+      🩲 ${formatOne(r.laTanga, "La Tanga (peor neto)", "net")}<br>
+      <span class="note">* Sin ganadores duplicados.</span>
+    `;
+  } else {
+    const m = calcMonthlyResultsUnique(rows);
+    summary.innerHTML = `
+      <strong>Resultados – Torneo Mensual</strong><br><br>
+
+      <strong>Flight A (HCP &lt; 12)</strong><br>
+      🏆 ${formatTop2(m.A.grossTop2, "Gross", "gross")}<br>
+      🥇 ${formatTop2(m.A.netTop2, "Neto", "net")}<br><br>
+
+      <strong>Flight B (HCP ≥ 12)</strong><br>
+      🏆 ${formatTop2(m.B.grossTop2, "Gross", "gross")}<br>
+      🥇 ${formatTop2(m.B.netTop2, "Neto", "net")}<br><br>
+
+      🩲 ${formatOne(m.laTanga, "La Tanga (peor neto general)", "net")}<br>
+      <span class="note">* Sin ganadores duplicados.</span>
+    `;
+  }
+});
+
+/* Show/hide results */
+const scoresSection = document.getElementById("scoresSection");
+document.getElementById("showResultsBtn").addEventListener("click", () => {
+  scoresSection.style.display = "block";
+  renderResultsTable();
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+});
+document.getElementById("hideResultsBtn").addEventListener("click", () => {
+  scoresSection.style.display = "none";
+});
+document.getElementById("buildResultsBtn").addEventListener("click", renderResultsTable);
+document.getElementById("roundType").addEventListener("change", () => {
+  if (scoresSection.style.display !== "none") renderResultsTable();
 });
 
 /* ========= INIT ========= */
 renderPlayers();
 renderGuests();
 renderGroups([]);
-renderMatchCards([]);
+document.getElementById("exportText").value = "";
 </script>
-
 </body>
 </html>
