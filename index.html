@@ -19,86 +19,85 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
-    :root {
-      --green-dark: #5B6F3A;
-      --green-mid:  #8FA76A;
+    :root{
+      --green-dark:#5B6F3A;
+      --green-mid:#8FA76A;
       --green-light:#C9D8A5;
-      --bg-main:   #F3F5EC;
+      --bg-main:#F3F5EC;
     }
 
-    body {
+    body{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg-main);
-      margin: 0;
-      padding: 1rem;
+      margin:0;
+      padding:1rem;
     }
 
-    .app {
-      max-width: 900px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 16px;
-      border: 3px solid var(--green-light);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    .app{
+      max-width:900px;
+      margin:0 auto;
+      background:#fff;
+      padding:1.5rem;
+      border-radius:16px;
+      border:3px solid var(--green-light);
+      box-shadow:0 3px 10px rgba(0,0,0,0.12);
     }
 
-    .logo-wrap { text-align: center; margin-bottom: 0.5rem; }
-    .logo-img { max-width: 140px; height: auto; }
+    .logo-wrap{text-align:center;margin-bottom:.5rem;}
+    .logo-img{max-width:140px;height:auto;}
 
-    h1 {
-      text-align: center;
-      font-size: 1.6rem;
-      color: var(--green-dark);
-      margin: 0.25rem 0 1rem 0;
+    h1{
+      text-align:center;
+      font-size:1.6rem;
+      color:var(--green-dark);
+      margin:.25rem 0 1rem 0;
+    }
+    h2{color:var(--green-dark);font-size:1.1rem;margin-top:1.5rem;}
+    h3{color:var(--green-dark);font-size:1rem;margin-top:1rem;}
+
+    .top-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      border-bottom:1px solid var(--green-light);
+      padding-bottom:.5rem;
+      margin-bottom:1rem;
+      align-items:center;
     }
 
-    h2 { color: var(--green-dark); font-size: 1.1rem; margin-top: 1.5rem; }
-    h3 { color: var(--green-dark); font-size: 1rem; margin-top: 1rem; }
-
-    .top-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      border-bottom: 1px solid var(--green-light);
-      padding-bottom: .5rem;
-      margin-bottom: 1rem;
-      align-items: center;
+    select,input,button,textarea{
+      border-radius:6px;
+      border:1px solid var(--green-light);
+      font-size:.9rem;
+      padding:.4rem .6rem;
     }
 
-    select, input, button, textarea {
-      border-radius: 6px;
-      border: 1px solid var(--green-light);
-      font-size: .9rem;
-      padding: .4rem .6rem;
+    button{
+      background:var(--green-dark);
+      color:#fff;
+      border:none;
+      cursor:pointer;
+      transition:.15s;
     }
+    button:hover{background:#4a5b30;}
 
-    button {
-      background: var(--green-dark);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: .15s;
-    }
-    button:hover { background: #4a5b30; }
-
-    #playersContainer {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px,1fr));
-      gap: .4rem;
-      background: #fafcf7;
+    #playersContainer{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(190px,1fr));
+      gap:.4rem;
+      background:#fafcf7;
       border-radius:10px;
       padding:.5rem;
       border:1px solid var(--green-light);
     }
 
-    .players-list label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
+    .players-list label{
+      display:inline-flex;
+      align-items:center;
+      gap:.3rem;
     }
 
-    .group-card {
+    .group-card{
       margin:.4rem 0;
       background:#fafcf7;
       padding:.6rem .7rem;
@@ -106,21 +105,18 @@
       border:1px solid var(--green-light);
     }
 
-    table { width:100%; border-collapse:collapse; font-size:.85rem; }
-    th,td { border:1px solid #d7dfc9; padding:.3rem; text-align:center; }
-    th { background:var(--green-light); color:#2f3a21; }
-
-    .note { font-size:.8rem; color:#516044; margin:.2rem 0; }
-    .strokes { font-size:.75rem; color:#444; }
-
-    .guest-item {
-      display:flex; justify-content:space-between;
-      font-size:.85rem; margin:.25rem 0;
-      gap: .5rem;
-      align-items: center;
+    .guest-item{
+      display:flex;
+      justify-content:space-between;
+      font-size:.85rem;
+      margin:.25rem 0;
+      gap:.5rem;
+      align-items:center;
     }
-    .guest-item button {
-      background:#b84747; padding:.15rem .5rem; font-size:.7rem;
+    .guest-item button{
+      background:#b84747;
+      padding:.15rem .5rem;
+      font-size:.7rem;
     }
 
     .badge{
@@ -130,13 +126,23 @@
       background:var(--green-light);
       color:#2f3a21;
       font-size:.75rem;
-      margin-left: .35rem;
+      margin-left:.35rem;
     }
 
-    .scorecard { margin:.5rem 0 1rem; padding:.5rem; border-radius:10px; background:#fafcf7; border:1px solid var(--green-light);}
+    .note{font-size:.8rem;color:#516044;margin:.2rem 0;}
+    .strokes{font-size:.75rem;color:#444;}
 
-    textarea {
-      width:100%; min-height:90px;
+    .scorecard{
+      margin:.5rem 0 1rem;
+      padding:.5rem;
+      border-radius:10px;
+      background:#fafcf7;
+      border:1px solid var(--green-light);
+    }
+
+    textarea{
+      width:100%;
+      min-height:90px;
       margin-top:.5rem;
       border-radius:8px;
       border:1px solid var(--green-light);
@@ -147,128 +153,120 @@
 </head>
 
 <body>
-  <div class="app">
-    <div class="logo-wrap">
-      <img src="regina-logo.png" class="logo-img" alt="Regina logo">
-    </div>
-    <h1>Regina Golf – Pareo y Resultados</h1>
-
-    <div class="top-row">
-      <div>
-        <label>Tipo de ronda:<br>
-          <select id="roundType">
-            <option value="regular">Ronda Regular</option>
-            <option value="mensual">Torneo Mensual</option>
-          </select>
-        </label>
-      </div>
-
-      <div>
-        <label>Formato de juego:<br>
-          <select id="gameFormat">
-            <option value="stroke">Stroke play</option>
-            <option value="stableford">Stableford</option>
-            <option value="match">Match play</option>
-          </select>
-        </label>
-      </div>
-
-      <button id="generateBtn">Generar Pareos</button>
-    </div>
-
-    <!-- NEW: Tee time selection -->
-    <h2>Tee times</h2>
-    <p class="note">Seleccione las horas disponibles para salida por hoyo 1 y hoyo 10.</p>
-
-    <div class="top-row" style="align-items:flex-end;">
-      <div style="min-width:260px;">
-        <label>Hoyo 1 (selección múltiple):<br>
-          <select id="teeTimesHole1" multiple size="6" style="width:100%;">
-            <option value="06:20">6:20</option>
-            <option value="06:30">6:30</option>
-            <option value="06:40">6:40</option>
-            <option value="06:50">6:50</option>
-            <option value="07:00">7:00</option>
-            <option value="07:10">7:10</option>
-          </select>
-        </label>
-      </div>
-
-      <div style="min-width:260px;">
-        <label>Hoyo 10 (selección múltiple):<br>
-          <select id="teeTimesHole10" multiple size="6" style="width:100%;">
-            <option value="06:20">6:20</option>
-            <option value="06:30">6:30</option>
-            <option value="06:40">6:40</option>
-            <option value="06:50">6:50</option>
-            <option value="07:00">7:00</option>
-            <option value="07:10">7:10</option>
-          </select>
-        </label>
-      </div>
-
-      <div style="min-width:220px;">
-        <button id="applyTeeTimesBtn" style="background:#8FA76A">Usar seleccionados</button>
-        <button id="clearTeeTimesBtn" style="background:#9da8a0">Limpiar</button>
-      </div>
-    </div>
-    <div id="teeTimesSummary" class="note"></div>
-
-    <!-- NEW: Excel upload -->
-    <h2>Actualizar HCP (Excel)</h2>
-    <p class="note">
-      Suba un Excel con columnas: <strong>Nombre</strong> y <strong>HCP</strong> (o Handicap). Actualiza handicaps en esta sesión.
-    </p>
-    <div class="top-row" style="border-bottom:none; padding-bottom:0; margin-bottom:.25rem;">
-      <input type="file" id="hcpExcelInput" accept=".xlsx,.xls" />
-      <button id="applyHcpBtn" style="background:#8FA76A">Actualizar handicaps</button>
-      <div id="hcpUploadStatus" class="note"></div>
-    </div>
-
-    <h2>Jugadores hoy</h2>
-    <p class="note">Marque quiénes juegan hoy. Todos son socios del grupo.</p>
-    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-      <button id="selectAllBtn" style="background:#8FA76A">Seleccionar todos</button>
-      <button id="deselectAllBtn" style="background:#9da8a0">Deseleccionar todos</button>
-    </div>
-    <div id="playersContainer" class="players-list"></div>
-
-    <h2>Invitados</h2>
-    <label>Anfitrión:</label><br>
-    <select id="guestHostSelect"></select>
-    <br><br>
-    <input id="guestNameInput" placeholder="Nombre invitado">
-    <input id="guestHcpInput" type="number" placeholder="HCP" style="width:120px;">
-    <button id="addGuestBtn">Agregar invitado</button>
-
-    <div id="guestsList" class="note" style="margin-top:.5rem;"></div>
-
-    <h2>Pareos</h2>
-    <div id="groupsContainer"></div>
-
-    <h3>Tarjetas Match Play</h3>
-    <div id="scorecardsContainer"></div>
-
-    <h3>Copiar a WhatsApp</h3>
-    <textarea id="exportText" readonly></textarea>
-
-    <!-- Optional: keep your existing results section as-is if you already have it.
-         I’m leaving a minimal placeholder so this file runs cleanly. -->
-    <div id="scoresSection" style="display:none;">
-      <h2>Resultados</h2>
-      <p class="note">Esta sección depende de tu lógica original de resultados.</p>
-    </div>
-
+<div class="app">
+  <div class="logo-wrap">
+    <img src="regina-logo.png" class="logo-img" alt="Regina logo">
   </div>
+
+  <h1>Regina Golf – Pareo y Resultados</h1>
+
+  <div class="top-row">
+    <div>
+      <label>Tipo de ronda:<br>
+        <select id="roundType">
+          <option value="regular">Ronda Regular</option>
+          <option value="mensual">Torneo Mensual</option>
+        </select>
+      </label>
+    </div>
+
+    <div>
+      <label>Formato de juego:<br>
+        <select id="gameFormat">
+          <option value="stroke">Stroke play</option>
+          <option value="stableford">Stableford</option>
+          <option value="match">Match play</option>
+        </select>
+      </label>
+    </div>
+
+    <button id="generateBtn">Generar Pareos</button>
+  </div>
+
+  <!-- Tee times -->
+  <h2>Tee times</h2>
+  <p class="note">Seleccione las horas disponibles para salida por hoyo 1 y hoyo 10.</p>
+
+  <div class="top-row" style="align-items:flex-end;">
+    <div style="min-width:260px;">
+      <label>Hoyo 1 (selección múltiple):<br>
+        <select id="teeTimesHole1" multiple size="6" style="width:100%;">
+          <option value="06:20">6:20</option>
+          <option value="06:30">6:30</option>
+          <option value="06:40">6:40</option>
+          <option value="06:50">6:50</option>
+          <option value="07:00">7:00</option>
+          <option value="07:10">7:10</option>
+        </select>
+      </label>
+    </div>
+
+    <div style="min-width:260px;">
+      <label>Hoyo 10 (selección múltiple):<br>
+        <select id="teeTimesHole10" multiple size="6" style="width:100%;">
+          <option value="06:20">6:20</option>
+          <option value="06:30">6:30</option>
+          <option value="06:40">6:40</option>
+          <option value="06:50">6:50</option>
+          <option value="07:00">7:00</option>
+          <option value="07:10">7:10</option>
+        </select>
+      </label>
+    </div>
+
+    <div style="min-width:220px;">
+      <button id="applyTeeTimesBtn" style="background:#8FA76A">Usar seleccionados</button>
+      <button id="clearTeeTimesBtn" style="background:#9da8a0">Limpiar</button>
+    </div>
+  </div>
+  <div id="teeTimesSummary" class="note"></div>
+
+  <!-- Excel upload -->
+  <h2>Actualizar HCP (Excel)</h2>
+  <p class="note">
+    Suba un Excel con columnas: <strong>Nombre</strong> y <strong>HCP</strong> (o Handicap). Actualiza handicaps en esta sesión.
+  </p>
+  <div class="top-row" style="border-bottom:none; padding-bottom:0; margin-bottom:.25rem;">
+    <input type="file" id="hcpExcelInput" accept=".xlsx,.xls" />
+    <button id="applyHcpBtn" style="background:#8FA76A">Actualizar handicaps</button>
+    <div id="hcpUploadStatus" class="note"></div>
+  </div>
+
+  <h2>Jugadores hoy</h2>
+  <p class="note">Marque quiénes juegan hoy. Todos son socios del grupo.</p>
+
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <button id="selectAllBtn" style="background:#8FA76A">Seleccionar todos</button>
+    <button id="deselectAllBtn" style="background:#9da8a0">Deseleccionar todos</button>
+  </div>
+
+  <div id="playersContainer" class="players-list"></div>
+
+  <h2>Invitados</h2>
+  <label>Anfitrión:</label><br>
+  <select id="guestHostSelect"></select>
+  <br><br>
+
+  <input id="guestNameInput" placeholder="Nombre invitado">
+  <input id="guestHcpInput" type="number" placeholder="HCP" style="width:120px;">
+  <button id="addGuestBtn">Agregar invitado</button>
+
+  <div id="guestsList" class="note" style="margin-top:.5rem;"></div>
+
+  <h2>Pareos</h2>
+  <div id="groupsContainer"></div>
+
+  <h3>Tarjetas Match Play</h3>
+  <div id="scorecardsContainer"></div>
+
+  <h3>Copiar a WhatsApp</h3>
+  <textarea id="exportText" readonly></textarea>
+
+  <!-- Keep your original Results logic if you had it; this file focuses on pairings + tee times + excel update -->
+</div>
 
 <script>
 /* ========= DATA ========= */
-
-/* NOTE:
-   Your pasted code had duplicated players and conflicting handicaps.
-   I deduplicated the list for stability. If you need the exact original list,
-   paste it and I’ll preserve it while still handling duplicates safely.
-*/
 
 const players = [
   "Gilberto Acosta","Phillippe Arnoux","Luis Beltran","Murielle Borgeaud",
@@ -282,8 +280,7 @@ const players = [
   "Pancho Townsend","Antonio Villarreal","Jose Von Chong"
 ];
 
-/* Initial handicaps (edit freely).
-   These will be overwritten by Excel upload for matching names. */
+// Initial handicaps (Excel upload can overwrite these)
 const handicaps = {
   "Gilberto Acosta": -1,
   "Phillippe Arnoux": 21,
@@ -322,11 +319,33 @@ const handicaps = {
   "Jose Von Chong": 25
 };
 
+/* ========= SPECIAL RESTRICTIONS (YOUR RULES) ========= */
+
+const FOUAD = "Fouad Moutran";
+
+// Fouad only plays with the following (priority order)
+const FOUAD_ALLOWED_PARTNERS = [
+  "Pancho Townsend",
+  "Hope Bullock III",
+  "Rodolfo Fuentes",
+  "Pedro Gonzalez",
+  "Antonio Villarreal",
+  "Carlos Braddick"
+];
+
+// Avoid pairing Olga with:
+const OLGA_CANNOT_PLAY_WITH = [
+  "Clarissa Corro",
+  "Antonio Villarreal",
+  "Luis Llorach",
+  "Sara Lin"
+];
+
 /* ========= STATE ========= */
 
-let guests = []; // {name, hcp, host}
-let teeSlots = []; // expanded list of {time:"HH:MM", startHole:1|10}
-let lastGroups = []; // groups generated
+let guests = [];   // {name, hcp, host}
+let teeSlots = []; // {time:"HH:MM", startHole:1|10}
+let lastGroups = [];
 
 /* ========= HELPERS ========= */
 
@@ -347,11 +366,6 @@ function escapeHtml(s){
     .replaceAll("'","&#039;");
 }
 
-function getSelectedPlayers(){
-  const checks = Array.from(document.querySelectorAll(".playerCheck"));
-  return checks.filter(c => c.checked).map(c => c.value);
-}
-
 function shuffle(arr){
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--){
@@ -361,7 +375,15 @@ function shuffle(arr){
   return a;
 }
 
-/* ========= RENDER PLAYERS & HOST SELECT ========= */
+function isGuest(p){ return p?.type === "guest"; }
+function isMember(p){ return p?.type === "member"; }
+
+function getSelectedPlayers(){
+  const checks = Array.from(document.querySelectorAll(".playerCheck"));
+  return checks.filter(c => c.checked).map(c => c.value);
+}
+
+/* ========= RENDER PLAYERS / HOST SELECT ========= */
 
 function renderPlayers(){
   const container = document.getElementById("playersContainer");
@@ -375,11 +397,10 @@ function renderPlayers(){
     `;
   }).join("");
 
-  // host select
   const host = document.getElementById("guestHostSelect");
-  host.innerHTML = `<option value="">(Seleccione anfitrión)</option>` + players.map(p =>
-    `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`
-  ).join("");
+  host.innerHTML =
+    `<option value="">(Seleccione anfitrión)</option>` +
+    players.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
 }
 
 document.getElementById("selectAllBtn").addEventListener("click", () => {
@@ -428,7 +449,7 @@ document.getElementById("addGuestBtn").addEventListener("click", () => {
   renderGuests();
 });
 
-/* ========= TEE TIMES (NEW) ========= */
+/* ========= TEE TIMES ========= */
 
 const teeTimesHole1 = document.getElementById("teeTimesHole1");
 const teeTimesHole10 = document.getElementById("teeTimesHole10");
@@ -455,12 +476,10 @@ function renderTeeSummary(){
 applyTeeTimesBtn.addEventListener("click", () => {
   const h1 = getSelectedValues(teeTimesHole1).sort();
   const h10 = getSelectedValues(teeTimesHole10).sort();
-
   teeSlots = [
     ...h1.map(t => ({ time: t, startHole: 1 })),
     ...h10.map(t => ({ time: t, startHole: 10 }))
   ];
-
   renderTeeSummary();
 });
 
@@ -471,22 +490,9 @@ clearTeeTimesBtn.addEventListener("click", () => {
   renderTeeSummary();
 });
 
-function assignTeeSlotsToGroups(groups){
-  for (let i = 0; i < groups.length; i++){
-    if (teeSlots[i]){
-      groups[i].teeTime = teeSlots[i].time;
-      groups[i].startHole = teeSlots[i].startHole;
-    } else {
-      groups[i].teeTime = null;
-      groups[i].startHole = null;
-    }
-  }
-  return groups;
-}
-
 renderTeeSummary();
 
-/* ========= EXCEL UPLOAD (NEW) ========= */
+/* ========= EXCEL UPLOAD ========= */
 
 const hcpExcelInput = document.getElementById("hcpExcelInput");
 const applyHcpBtn = document.getElementById("applyHcpBtn");
@@ -541,9 +547,7 @@ applyHcpBtn.addEventListener("click", async () => {
     const playerMap = new Map();
     players.forEach(p => playerMap.set(normalizeName(p), p));
 
-    let updated = 0;
-    let skippedNotFound = 0;
-    let skippedBad = 0;
+    let updated = 0, skippedNotFound = 0, skippedBad = 0;
 
     for (let r = 1; r < rows.length; r++){
       const row = rows[r];
@@ -556,22 +560,16 @@ applyHcpBtn.addEventListener("click", async () => {
       if (!key) continue;
 
       const canonical = playerMap.get(key);
-      if (!canonical){
-        skippedNotFound++;
-        continue;
-      }
+      if (!canonical){ skippedNotFound++; continue; }
 
       const h = parseNumber(rawHcp);
-      if (h === null){
-        skippedBad++;
-        continue;
-      }
+      if (h === null){ skippedBad++; continue; }
 
       handicaps[canonical] = h;
       updated++;
     }
 
-    renderPlayers(); // show new HCPs
+    renderPlayers();
 
     hcpUploadStatus.innerHTML =
       `Listo. Actualizados: <strong>${updated}</strong>. ` +
@@ -584,14 +582,142 @@ applyHcpBtn.addEventListener("click", async () => {
   }
 });
 
-/* ========= GROUPING / OUTPUT =========
-   This is a simple, working pairing generator:
-   - Takes selected members + guests
-   - Shuffles
-   - Makes groups of 4 (last group may be 3)
-   - Assigns tee time slots in order
-   If your original app had specific pairing rules, paste them and I’ll adapt the tee/excel changes into YOUR logic.
-*/
+/* ========= RESTRICTIONS ENGINE (FOUAD + OLGA) ========= */
+
+function fouadCanBeGroupedWith(otherObj){
+  if (!otherObj) return true;
+
+  // Fouad can play with allowed member partners
+  if (isMember(otherObj)){
+    return otherObj.name === FOUAD || FOUAD_ALLOWED_PARTNERS.includes(otherObj.name);
+  }
+
+  // Guests: allow if host is Fouad OR host is one of Fouad's allowed partners
+  if (isGuest(otherObj)){
+    const host = (otherObj.host || "").trim();
+    return host === FOUAD || FOUAD_ALLOWED_PARTNERS.includes(host);
+  }
+
+  return false;
+}
+
+function violatesOlgaRule(group){
+  const names = group.players.map(p => p.name);
+  if (!names.includes("Olga Brooks")) return false;
+  return OLGA_CANNOT_PLAY_WITH.some(n => names.includes(n));
+}
+
+function buildFouadGroupIfPlaying(allPlayers){
+  const fouadIndex = allPlayers.findIndex(p => p.name === FOUAD);
+  if (fouadIndex === -1) return { fouadGroup: null, remaining: allPlayers.slice() };
+
+  const remaining = allPlayers.slice();
+  const fouadObj = remaining.splice(fouadIndex, 1)[0];
+
+  const group = { players: [fouadObj], teeTime:null, startHole:null };
+
+  // Add allowed partners in priority order (members)
+  for (const partnerName of FOUAD_ALLOWED_PARTNERS){
+    if (group.players.length >= 4) break;
+    const idx = remaining.findIndex(p => p.name === partnerName);
+    if (idx !== -1){
+      const candidate = remaining[idx];
+      if (fouadCanBeGroupedWith(candidate)){
+        group.players.push(remaining.splice(idx, 1)[0]);
+      }
+    }
+  }
+
+  // If still space, fill with guests invited by Fouad or allowed partners
+  for (let i = 0; i < remaining.length && group.players.length < 4; ){
+    const candidate = remaining[i];
+    if (isGuest(candidate) && fouadCanBeGroupedWith(candidate)){
+      group.players.push(remaining.splice(i, 1)[0]);
+    } else {
+      i++;
+    }
+  }
+
+  // If still not full, leave as 2–3 players (do NOT violate "only plays with")
+  return { fouadGroup: group, remaining };
+}
+
+function generateGroupsWithFouadAndOlgaRules(playerObjs){
+  const warnings = [];
+
+  const { fouadGroup, remaining } = buildFouadGroupIfPlaying(playerObjs);
+  const pool = shuffle(remaining);
+
+  const groups = [];
+  if (fouadGroup) groups.push(fouadGroup);
+
+  for (const p of pool){
+    let placed = false;
+
+    // Try add to existing group
+    for (const g of groups){
+      if (g.players.length >= 4) continue;
+
+      const hasFouad = g.players.some(x => x.name === FOUAD);
+      if (hasFouad && !fouadCanBeGroupedWith(p)) continue;
+
+      const testGroup = { players: g.players.concat([p]) };
+      if (violatesOlgaRule(testGroup)) continue;
+
+      g.players.push(p);
+      placed = true;
+      break;
+    }
+
+    if (!placed){
+      // start new group (but if p is not allowed with Fouad, that's fine because Fouad is already grouped)
+      groups.push({ players: [p], teeTime:null, startHole:null });
+    }
+  }
+
+  // Warn if Olga violation exists (should be avoided; if constraints forced it, warn)
+  groups.forEach((g, idx) => {
+    if (violatesOlgaRule(g)){
+      warnings.push(`Grupo ${idx+1}: Olga Brooks con pareja no permitida`);
+    }
+  });
+
+  return { groups, warnings };
+}
+
+/* ========= ASSIGN TEE TIMES (FOUAD EARLIEST) ========= */
+
+function assignTeeSlotsToGroups(groups){
+  // earliest by time regardless of hole
+  const slots = (teeSlots || []).slice().sort((a,b) => a.time.localeCompare(b.time));
+
+  const fouadGroupIndex = groups.findIndex(g => g.players.some(p => p.name === FOUAD));
+
+  // Reserve earliest for Fouad group
+  if (slots.length && fouadGroupIndex !== -1){
+    const earliest = slots.shift();
+    groups[fouadGroupIndex].teeTime = earliest.time;
+    groups[fouadGroupIndex].startHole = earliest.startHole;
+  }
+
+  let si = 0;
+  for (let gi = 0; gi < groups.length; gi++){
+    if (gi === fouadGroupIndex) continue;
+
+    if (slots[si]){
+      groups[gi].teeTime = slots[si].time;
+      groups[gi].startHole = slots[si].startHole;
+      si++;
+    } else {
+      groups[gi].teeTime = null;
+      groups[gi].startHole = null;
+    }
+  }
+
+  return groups;
+}
+
+/* ========= GROUPING / OUTPUT ========= */
 
 function buildTodayPlayers(){
   const selectedMembers = getSelectedPlayers().map(name => ({
@@ -604,23 +730,10 @@ function buildTodayPlayers(){
     name: g.name,
     hcp: g.hcp,
     type: "guest",
-    host: g.host || ""
+    host: (g.host || "").trim()
   }));
 
   return [...selectedMembers, ...guestPlayers];
-}
-
-function generateGroups(list){
-  const shuffled = shuffle(list);
-  const groups = [];
-  for (let i = 0; i < shuffled.length; i += 4){
-    groups.push({
-      players: shuffled.slice(i, i + 4),
-      teeTime: null,
-      startHole: null
-    });
-  }
-  return groups;
 }
 
 function renderGroups(groups){
@@ -643,7 +756,7 @@ function renderGroups(groups){
 
     return `
       <div class="group-card">
-        <div><strong>Grupo ${idx + 1}</strong> <span class="badge">${teeLabel}</span></div>
+        <div><strong>Grupo ${idx + 1}</strong> <span class="badge">${escapeHtml(teeLabel)}</span></div>
         <div style="margin-top:.35rem;">${rows}</div>
       </div>
     `;
@@ -653,12 +766,12 @@ function renderGroups(groups){
 function renderMatchCards(groups){
   const gameFormat = document.getElementById("gameFormat").value;
   const el = document.getElementById("scorecardsContainer");
+
   if (gameFormat !== "match" || !groups.length){
     el.innerHTML = "<span class='note'>Seleccione “Match play” para mostrar tarjetas.</span>";
     return;
   }
 
-  // Minimal match-play cards: 1 vs 2, 3 vs 4
   el.innerHTML = groups.map((g, idx) => {
     const p = g.players;
     const a = p[0]?.name || "—";
@@ -703,7 +816,8 @@ document.getElementById("generateBtn").addEventListener("click", () => {
     return;
   }
 
-  let groups = generateGroups(today);
+  const result = generateGroupsWithFouadAndOlgaRules(today);
+  let groups = result.groups;
   groups = assignTeeSlotsToGroups(groups);
 
   lastGroups = groups;
@@ -711,6 +825,10 @@ document.getElementById("generateBtn").addEventListener("click", () => {
   renderGroups(groups);
   renderMatchCards(groups);
   document.getElementById("exportText").value = buildWhatsAppText(groups);
+
+  if (result.warnings.length){
+    alert("⚠️ Avisos:\n" + result.warnings.join("\n"));
+  }
 });
 
 /* ========= INIT ========= */
